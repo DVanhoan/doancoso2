@@ -36,7 +36,6 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white shadow-lg rounded-lg flex flex-col md:flex-row w-full max-w-4xl">
-        {/* Form đăng nhập */}
         <div className="w-full md:w-1/2 p-8">
           <div className="text-center mb-8">
             <img src={LoginLogo} alt="Logo" className="mx-auto mb-4 w-20 h-20" />

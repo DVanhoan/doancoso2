@@ -1,64 +1,58 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SavedJobController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // API route to get all saved jobs
     public function index()
     {
-        //
+        // Get the authenticated user's saved posts
+        $posts = auth()->user()->posts;
+
+        // Return the saved posts as a JSON response
+        return response()->json([
+            'success' => true,
+            'data' => $posts
+        ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    // API route to save a job
+    public function store($id)
     {
-        //
+        $user = auth()->user();
+        $hasPost = $user->posts()->where('id', $id)->exists();
+
+        // Check if the job post is already saved
+        if ($hasPost) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You already have saved this job!',
+            ], 400); // Bad Request as it is a duplicate save
+        } else {
+            $user->posts()->attach($id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Job successfully saved!'
+            ], 200);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // API route to remove a saved job
     public function destroy($id)
     {
-        //
+        $user = auth()->user();
+
+        // Detach the job post from the saved list
+        $user->posts()->detach($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deleted saved job!'
+        ], 200);
     }
 }
