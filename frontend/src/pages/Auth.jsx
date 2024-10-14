@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { Office } from "../assets";
 import { Login } from "../components";
 
 const Auth = () => {
@@ -19,7 +18,6 @@ const Auth = () => {
 
   return (
     <div className="w-full">
-      {/* <img src={Office} alt="Office" className="object-contain " /> */}
       <Login/>
     </div>
   );

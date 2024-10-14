@@ -10,30 +10,26 @@ use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\SavedJobController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\CompanyCategoryController;
 
-// Auth
-use Illuminate\Support\Facades\Auth;
+
 
 Route::prefix('v1')->group(function () {
 
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
-    Route::post('refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
-    Route::get('me', [AuthController::class, 'me'])->middleware('auth:api');
-    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
-
-
-    // Các route public
     Route::get('/home', [PostController::class, 'index'])->name('api.post.index')->middleware('auth:api');
     Route::get('/job/{job}', [PostController::class, 'show'])->name('api.post.show');
     Route::get('/employer/{employer}', [AuthorController::class, 'employer'])->name('api.account.employer');
     Route::get('/search', [JobController::class, 'index'])->name('api.job.index');
 
     // Các route yêu cầu authentication
-    Route::middleware('auth:api')->prefix('account')->group(function () {
-        // AccountController routes
-        Route::post('logout', [AccountController::class, 'logout'])->name('api.account.logout');
-        Route::get('overview', [AccountController::class, 'index'])->name('api.account.index');
+    Route::middleware('auth:api')->group(function () {
+
+        Route::post('refresh', [AuthController::class, 'refresh'])->name('api.account.refresh');
+        Route::post('logout', [AuthController::class, 'logout'])->name('api.account.logout');
+        Route::get('my-account', [AuthController::class, 'me'])->name('api.account.index');
         Route::get('deactivate', [AccountController::class, 'deactivateView'])->name('api.account.deactivate');
         Route::put('change-password', [AccountController::class, 'changePassword'])->name('api.account.changePassword');
         Route::delete('delete', [AccountController::class, 'deleteAccount'])->name('api.account.delete');
@@ -47,8 +43,22 @@ Route::prefix('v1')->group(function () {
         Route::get('apply-job', [AccountController::class, 'applyJobView'])->name('api.account.applyJob');
         Route::post('apply-job', [AccountController::class, 'applyJob'])->name('api.account.applyJob');
 
+        //Admin Role Routes
+        Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+            Route::get('dashboard', [AdminController::class, 'dashboard'])->name('account.dashboard');
+            Route::get('view-all-users', [AdminController::class, 'viewAllUsers'])->name('account.viewAllUsers');
+            Route::delete('view-all-users', [AdminController::class, 'destroyUser'])->name('account.destroyUser');
+
+            Route::get('category/{category}/edit', [CompanyCategoryController::class, 'edit'])->name('category.edit');
+            Route::post('category', [CompanyCategoryController::class, 'store'])->name('category.store');
+            Route::put('category/{id}', [CompanyCategoryController::class, 'update'])->name('category.update');
+            Route::delete('category/{id}', [CompanyCategoryController::class, 'destroy'])->name('category.destroy');
+        });
+
+
+
         // Author routes
-        Route::middleware(['role:author'])->group(function () {
+        Route::middleware(['role:author'])->prefix('author')->group(function () {
             Route::get('author-section', [AuthorController::class, 'authorSection'])->name('api.account.authorSection');
 
             // Job application routes

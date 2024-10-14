@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Company;
 use App\Models\CompanyCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\http\Controllers\Controller;
 
 class CompanyController extends Controller
 {

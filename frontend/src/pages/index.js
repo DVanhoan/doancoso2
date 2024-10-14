@@ -7,6 +7,8 @@ import UploadJob from "./UploadJob";
 import About from "./About";
 import JobDetail from "./JobDetail";
 import Error_404 from "./Error_404";
+import Admin from "./Admin";
+import Author  from "./Author";
 
 
 export {
@@ -18,5 +20,7 @@ export {
   UploadJob,
   About,
   JobDetail,
-  Error_404
+  Error_404,
+  Admin,
+  Author
 };

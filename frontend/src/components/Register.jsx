@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-// import { registerUser } from "../redux/actions/auth"; // Giả sử bạn có action cho đăng ký
+import { registerUser } from "../redux/actions/authActions"; 
 import { LoginLogo } from "../assets";
 
 const RegisterPage = () => {
@@ -13,15 +13,15 @@ const RegisterPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
 
   const onSubmit = async (data) => {
-    // dispatch(registerUser(data))
-    //   .unwrap()
-    //   .then(() => {
-    //     setErrMsg("");
-    //     navigate("/login");
-    //   })
-    //   .catch((error) => {
-    //     setErrMsg(error);
-    //   });
+    dispatch(registerUser(data))
+      .unwrap()
+      .then(() => {
+        setErrMsg("");
+        navigate("/login");
+      })
+      .catch((error) => {
+        setErrMsg(error);
+      });
   };
 
   return (
@@ -91,14 +91,6 @@ const RegisterPage = () => {
             >
               Login now
             </span>
-          </p>
-        </div>
-
-        {/* Phần hình ảnh bên phải */}
-        <div className="w-full md:w-1/2 bg-gray-50 p-8 flex flex-col justify-center items-center">
-          <h2 className="text-2xl font-semibold text-gray-800">Register for a better opportunity</h2>
-          <p className="text-gray-600 text-sm mt-2 text-center">
-            It's free and always will be. Your confidentiality is assured.
           </p>
         </div>
       </div>

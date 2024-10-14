@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\CompanyCategory;
 use Illuminate\Http\Request;
+use App\http\Controllers\Controller;
 
 class CompanyCategoryController extends Controller
 {

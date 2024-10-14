@@ -1,15 +1,11 @@
-import { createStore, applyMiddleware, compose } from 'redux';
-import reducer from './reducers';
-import { save, load } from 'redux-localstorage-simple';
+import { createStore, applyMiddleware } from 'redux';
+import { thunk } from 'redux-thunk';
+import rootReducer from './reducers/rootReducer'; // Đường dẫn tới file reducer chính của bạn
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-const createStoreWithMiddleware = applyMiddleware(save())(createStore);
-
-const store = createStoreWithMiddleware(
-  reducer,
-  load(),
-  composeEnhancers()
+// Cấu hình store để sử dụng middleware thunk
+const store = createStore(
+  rootReducer,
+  applyMiddleware(thunk)
 );
 
 export default store;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanyCategory;
@@ -8,7 +8,6 @@ use App\Models\Post;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use RealRashid\SweetAlert\Facades\Alert;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -27,7 +26,7 @@ class Admincontroller extends Controller
         $dashCount['post'] = Post::count();
         $dashCount['livePost'] = Post::where('deadline', '>', Carbon::now())->count();
 
-        return view('admin.dashboard')->with([
+        return response()->json([
             'companyCategories' => CompanyCategory::all(),
             'dashCount' => $dashCount,
             'recentAuthors' => $authors,
@@ -39,9 +38,17 @@ class Admincontroller extends Controller
     public function viewAllUsers()
     {
         $users = User::select('id', 'name', 'email', 'created_at')->latest()->paginate(30);
-        return view('admin.pages.users.index')->with([
-            'users' => $users
-        ]);
+
+        if (!$users) {
+            return response()->json([
+                'message' => 'No users found'
+            ], 404);
+        }
+
+        return response()->json([
+            'users' => $users,
+            'message' => 'Users retrieved successfully'
+        ], 200);
     }
 
 
@@ -49,10 +56,13 @@ class Admincontroller extends Controller
     {
         $user = User::findOrFail($request->user_id);
         if ($user->delete()) {
-            Alert::toast('Deleted Successfully!', 'danger');
-            return redirect()->route('admin.pages.users.index');
+            return response()->json([
+                'message' => 'User deleted successfully'
+            ], 200);
         } else {
-            return redirect()->back();
+            return response()->json([
+                'message' => 'Failed to delete user'
+            ], 500);
         }
     }
 }

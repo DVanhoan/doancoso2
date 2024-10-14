@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 
@@ -22,10 +25,12 @@ class AuthController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Nếu không phải API, có thể chuyển hướng tới route login (nếu cần)
         return route('login');
     }
-    // Đăng ký người dùng
+
+
+
+
     public function register(Request $request)
     {
         $validatedData = $request->validate([
@@ -38,14 +43,20 @@ class AuthController extends Controller
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
+
         ]);
+
+
+        $user->assignRole('user');
 
         $token = JWTAuth::fromUser($user);
 
         return response()->json(['token' => $token], 201);
     }
 
-    // Đăng nhập người dùng
+
+
+
     public function login(Request $request)
     {
         $credentials = request(['email', 'password']);
@@ -56,16 +67,51 @@ class AuthController extends Controller
             ], 401);
         }
 
-        return $this->respondWithToken($token);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $role = $user->getRoleNames()->first();
+
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->guard('api')->factory()->getTTL() * 60,
+            'role' => $role,
+            'user' => $user
+        ]);
     }
 
-    // Lấy thông tin người dùng hiện tại
-    public function me()
+
+
+    public function me(Request $request )
     {
-        return response()->json(Auth::user());
+        try {
+            // Lấy thông tin người dùng từ token
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found'], 404);
+            }
+        } catch (TokenExpiredException $e) {
+            // Token đã hết hạn
+            return response()->json(['token_expired'], 401);
+        } catch (TokenInvalidException $e) {
+            // Token không hợp lệ
+            return response()->json(['token_invalid'], 401);
+        } catch (JWTException $e) {
+            // Token không được cung cấp
+            return response()->json(['token_absent'], 401);
+        }
+
+        // Token hợp lệ và trả về thông tin người dùng
+        return response()->json(compact('user'));
     }
 
-    // Đăng xuất người dùng
+
+
+
     public function logout()
     {
         Auth::logout();
@@ -78,7 +124,9 @@ class AuthController extends Controller
         return $this->respondWithToken(auth()->guard('api')->refresh());
     }
 
-    // Trả về thông tin token
+
+
+
     protected function respondWithToken($token)
     {
         return response()->json([
