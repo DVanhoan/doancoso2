@@ -15,29 +15,52 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm({ mode: "onChange" });
 
-  const onSubmit = async (data) => {
+  const success = () => {
+    const id = toast.loading("Loading...");
+    setTimeout(() => {
+      toast.update(id, {
+        render: "Done!",
+        type: "success",
+        isLoading: false,
+        autoClose: 1000,
+      });
+    }, 1000);
+  };
 
+  const error = (error) => {
+    const id = toast.loading("Loading..." + error);
+    setTimeout(() => {
+      toast.update(id, {
+        render: "Error!",
+        type: "error",
+        isLoading: false,
+        autoClose: 1000,  
+      });
+    }, 1000);
+  };
+
+  const onSubmit = async (data) => {
     try {
       const response = await login({ ...data });
 
       const token = response.data.access_token;
-      
+
       if (token) {
-        toast.success("Đăng nhập thành công");
-        const role = localStorage.getItem('role');
+        success();
+        const role = localStorage.getItem("role");
         if (role === "admin") {
-          navigate("/admin/dashboard");
+          navigate("/account/dashboard");
         } else if (role === "author") {
-          navigate("/author/dashboard");
+          navigate("/account/author");
         } else {
           navigate("/");
         }
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        toast.error("Tài khoản như được đăng ký hoặc mật khẩu");
+        error("Tài khoản như được đăng ký hoặc mật khẩu")
       } else {
-        toast.error("Đã xảy ra lỗi, vui lòng thử lại sau.");
+        error("Đã xảy ra lỗi, vui lòng thử lại sau");
       }
     }
   };
@@ -72,7 +95,6 @@ const LoginPage = () => {
             <span className="border-b w-full"></span>
           </div>
 
-
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <TextInput
               name="email"
@@ -81,7 +103,7 @@ const LoginPage = () => {
               type="email"
               register={register("email", {
                 required: "Email Address is required!",
-              })}         
+              })}
             />
 
             <TextInput

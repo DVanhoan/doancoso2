@@ -33,3 +33,24 @@ export const adminDashboard = () => {
     }
   };
 };
+
+export const storeCategory = async (category) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found, please login again.");
+  }
+  try {
+    const res = await axios.post(`${API_URL}admin/category`, category, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.data) {
+      console.log(res.data);
+      return true;
+      
+    }
+  } catch (error) {
+    console.error("Error fetching admin dashboard data", error);
+  }
+};

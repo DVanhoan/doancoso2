@@ -7,8 +7,9 @@ import UploadJob from "./UploadJob";
 import About from "./About";
 import JobDetail from "./JobDetail";
 import Error_404 from "./Error_404";
-import Admin from "./Admin";
-import Author  from "./Author";
+import AdminDashboard from "./Admin";
+import AuthorSection  from "./Author";
+import AccountLayout from "./Account";
 
 
 export {
@@ -21,6 +22,7 @@ export {
   About,
   JobDetail,
   Error_404,
-  Admin,
-  Author
+  AdminDashboard,
+  AuthorSection,
+  AccountLayout
 };

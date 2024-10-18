@@ -1,16 +1,16 @@
-import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 
 
 const PrivateRoute = ({ children, allowedRoles }) => {
-  const { user } = useSelector((state) => state.auth); 
-  const role = user?.role;
+  
+  const role = localStorage.getItem('role');
   const location = useLocation();
+  const token = localStorage.getItem('token');
 
-  console.log(allowedRoles, role);
+  
 
 
-  if (!user?.access_token) {
+  if (!token) {
     return <Navigate to="/user-auth" state={{ from: location }} replace />;
   }
 

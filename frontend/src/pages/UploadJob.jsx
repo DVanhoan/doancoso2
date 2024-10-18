@@ -22,7 +22,7 @@ const UploadJob = () => {
 
   return (
     <div className='container mx-auto flex flex-col md:flex-row gap-8 2xl:gap-14 bg-white px-5'>
-      <div className='w-full h-fit md:w-2/3 2xl:2/4  px-5 py-10 md:px-10 shadow-md'>
+      <div className='w-full h-fit  py-10 md:px-10 shadow-md'>
         <div>
           <p className='text-gray-500 font-semibold text-2xl'>Job Post</p>
 
@@ -145,15 +145,6 @@ const UploadJob = () => {
               />
             </div>
           </form>
-        </div>
-      </div>
-      <div className='w-full md:w-1/3 2xl:2/4 p-5 mt-20 md:mt-0'>
-        <p className='text-gray-500 font-semibold'>Recent Job Post</p>
-
-        <div className='w-full flex flex-wrap gap-6'>
-          {jobs.slice(0, 4).map((job, index) => {
-            return <JobCard job={job} key={index} />;
-          })}
         </div>
       </div>
     </div>

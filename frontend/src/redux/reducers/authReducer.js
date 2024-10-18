@@ -1,5 +1,5 @@
 
-import { LOGIN, LOGOUT, GET_ALL, SET_MY_USER} from '../types';
+import { LOGIN, LOGOUT, GET_ALL, SET_MY_USER, AUTH_ERROR} from '../types';
 
 const initialState = {
   user: null,
@@ -34,11 +34,20 @@ const authReducer = (state = initialState, action) => {
     case SET_MY_USER:
       return {
         ...state,
+        user: action.payload,
+        isAuthenticated: true,
+        error: null,
+        loading: false,
+      };
+
+    case AUTH_ERROR:
+      return {
+        ...state,
         user: null,
         isAuthenticated: false,
         error: action.payload,
-        loading: false,
       };
+
     default:
       return state;
   }

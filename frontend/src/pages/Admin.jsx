@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { adminDashboard } from "./../redux/actions/adminAction";
-
+import { adminDashboard, storeCategory } from "./../redux/actions/adminAction";
+import { toast } from "react-toastify";
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("companyCategories"); // State to manage active tab
-
+  const [category_name, setCategoryName] = useState("");
   const dispatch = useDispatch();
   const {
     dashCount,
@@ -21,36 +21,50 @@ const Dashboard = () => {
     dispatch(adminDashboard());
   }, [dispatch]);
 
-  if (loading) return <div>Loading...</div>;
+
   if (error) return <div>Error: {error}</div>;
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
 
+  const addCategory = () => {
+    try {
+      const status =  dispatch(storeCategory({ category_name: category_name }));
+      if(status)
+      {
+        toast.success("Category added successfully!");
+        setCategoryName("");
+      }
+      
+    } catch (error) {
+      console.error("Error adding category", error);
+    }
+  };
+
   return (
     <div className="account-layout border">
-      <div className="account-hdr bg-primary text-white border p-4">
+      <div className="account-hdr bg-primary text-black border p-4">
         Dashboard
       </div>
       <div className="account-bdy p-6">
         {/* Dashboard cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
-          <div className="card dashboard-card text-white h-100 shadow bg-primary p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div className="card dashboard-card text-black h-100 shadow bg-primary p-6">
             <div className="rotate">
               <i className="fas fa-users fa-4x"></i>
             </div>
             <h6 className="text-uppercase">Users</h6>
             <h1>{dashCount.user}</h1>
           </div>
-          <div className="card dashboard-card text-white h-100 shadow bg-secondary p-6">
+          <div className="card dashboard-card text-black h-100 shadow bg-secondary p-6">
             <div className="rotate">
               <i className="fas fa-building fa-4x"></i>
             </div>
             <h6 className="text-uppercase">Total Jobs</h6>
             <h1>{dashCount.post}</h1>
           </div>
-          <div className="card dashboard-card text-white h-100 shadow bg-info p-6">
+          <div className="card dashboard-card text-black h-100 shadow bg-info p-6">
             <div className="rotate">
               <i className="fas fa-user-tie fa-4x"></i>
             </div>
@@ -59,17 +73,15 @@ const Dashboard = () => {
           </div>
         </div>
 
-
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="card dashboard-card text-white h-100 shadow bg-danger p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <div className="card dashboard-card text-black h-100 shadow bg-danger p-6">
             <div className="rotate">
               <i className="fas fa-star-of-life fa-4x"></i>
             </div>
             <h6 className="text-uppercase">Live Posts</h6>
             <h1>{dashCount.livePost}</h1>
           </div>
-          <div className="card dashboard-card text-white h-100 shadow bg-warning p-6">
+          <div className="card dashboard-card text-black h-100 shadow bg-warning p-6">
             <div className="rotate">
               <i className="fas fa-industry fa-4x"></i>
             </div>
@@ -78,58 +90,51 @@ const Dashboard = () => {
           </div>
         </div>
 
-
-      
-          <div className="table-responsive">
-            <table className="min-w-full table-auto bg-white">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="py-2 px-4">#</th>
-                  <th className="py-2 px-4">Name</th>
-                  <th className="py-2 px-4">Email</th>
-                  <th className="py-2 px-4">Company Name</th>
-                  <th className="py-2 px-4">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentAuthors.data && recentAuthors.data.length > 0 ? (
-                  recentAuthors.data.map((author) => (
-                    <tr key={author.id} className="border-b">
-                      <td className="py-2 px-4">{author.id}</td>
-                      <td className="py-2 px-4">{author.name}</td>
-                      <td className="py-2 px-4">{author.email}</td>
-                      <td className="py-2 px-4">{author.company?.title}</td>
-                      <td className="py-2 px-4">
-                        <a
-                          href=''
-                          className="btn btn-primary"
-                        >
-                          View Company
-                        </a>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="py-2 px-4">
-                      No authors found
+        {/* Recent Authors Table */}
+        <div className="table-responsive">
+          <table className="min-w-full table-auto bg-white">
+            <thead>
+              <tr className="bg-gray-200 text-left">
+                <th className="py-2 px-4">#</th>
+                <th className="py-2 px-4">Name</th>
+                <th className="py-2 px-4">Email</th>
+                <th className="py-2 px-4">Company Name</th>
+                <th className="py-2 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentAuthors.data && recentAuthors.data.length > 0 ? (
+                recentAuthors.data.map((author) => (
+                  <tr key={author.id} className="border-b">
+                    <td className="py-2 px-4">{author.id}</td>
+                    <td className="py-2 px-4">{author.name}</td>
+                    <td className="py-2 px-4">{author.email}</td>
+                    <td className="py-2 px-4">{author.company?.title}</td>
+                    <td className="py-2 px-4">
+                      <a href="" className="btn btn-primary">
+                        View Company
+                      </a>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          
-
-
-
-
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="py-2 px-4">
+                    No authors found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {/* Tab Navigation */}
-        <div className="tabs">
-          <div className="tab-list flex space-x-4">
+        <div className="tabs mt-6">
+          <div className="tab-list flex flex-wrap space-x-2">
             <button
-              className={`tab-item ${activeTab === "companyCategories" ? "active" : ""}`}
+              className={`tab-item ${
+                activeTab === "companyCategories" ? "active" : ""
+              }`}
               onClick={() => handleTabChange("companyCategories")}
             >
               Company Categories
@@ -141,13 +146,17 @@ const Dashboard = () => {
               Roles
             </button>
             <button
-              className={`tab-item ${activeTab === "permissions" ? "active" : ""}`}
+              className={`tab-item ${
+                activeTab === "permissions" ? "active" : ""
+              }`}
               onClick={() => handleTabChange("permissions")}
             >
               Permissions
             </button>
             <button
-              className={`tab-item ${activeTab === "rolesHavePermissions" ? "active" : ""}`}
+              className={`tab-item ${
+                activeTab === "rolesHavePermissions" ? "active" : ""
+              }`}
               onClick={() => handleTabChange("rolesHavePermissions")}
             >
               Roles have permissions
@@ -164,8 +173,11 @@ const Dashboard = () => {
                     type="text"
                     className="input border p-2 rounded w-full"
                     placeholder="Company category name"
+                    value={category_name}
+                    onChange={(e) => setCategoryName(e.target.value)}
                   />
-                  <button className="ml-2 px-4 py-2 bg-blue-500 text-white rounded">
+                  <button className="ml-2 px-4 py-2 bg-blue-500 text-white rounded" 
+                    onClick={addCategory}>
                     Add
                   </button>
                 </form>
@@ -275,7 +287,9 @@ const Dashboard = () => {
                         <td className="py-2 px-4">{role.name}</td>
                         <td className="py-2 px-4">
                           {role.permissions.length === 0 ? (
-                            <span className="text-blue-500">Basic Auth Permissions</span>
+                            <span className="text-blue-500">
+                              Basic Auth Permissions
+                            </span>
                           ) : (
                             role.permissions.map((permission) => (
                               <span

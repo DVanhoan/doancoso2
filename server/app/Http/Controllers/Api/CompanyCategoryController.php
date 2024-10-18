@@ -11,17 +11,17 @@ class CompanyCategoryController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request
+        
         $request->validate([
             'category_name' => 'required|min:5'
         ]);
 
-        // Create a new category
+        
         $category = CompanyCategory::create([
             'category_name' => $request->category_name
         ]);
 
-        // Return a JSON response for successful creation
+        
         return response()->json([
             'success' => true,
             'message' => 'Category Created!',

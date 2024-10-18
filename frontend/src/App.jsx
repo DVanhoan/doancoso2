@@ -14,39 +14,35 @@ import {
     JobDetail,
     UserProfile,
     Error_404,
-    Admin,
-    Author
+    AdminDashboard,
+    AuthorSection,
+    AccountLayout
 } from "./pages";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
     const dispatch = useDispatch();
-    const { user, loading } = useSelector((state) => state.auth); 
+    const { loading } = useSelector((state) => state.auth);
     const [authChecked, setAuthChecked] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             dispatch(getMyUser())
-                .then(() => {
-                    setAuthChecked(true); 
-                })
-                .catch(() => {
-                    setAuthChecked(true);
-                });
+                .then(() => setAuthChecked(true))
+                .catch(() => setAuthChecked(true));
         } else {
-            setAuthChecked(true); 
+            setAuthChecked(true);
         }
     }, [dispatch]);
 
-    if (!authChecked || loading) {
-        toast.info("Đang xuất lý, xin vui lòng đợi!");
+    if (!authChecked) {
+        return <div>Loading...</div>; 
     }
 
     return (
         <main className="bg-[#fff]">
             <Navbar />
-
             <Routes>
                 <Route path="/" element={<FindJobs />} />
                 <Route path="/companies" element={<Companies />} />
@@ -54,15 +50,12 @@ function App() {
                 <Route path="/user-auth" element={<AuthPage />} />
                 <Route path="/job-detail/:id" element={<JobDetail />} />
 
-                {/* Các route yêu cầu xác thực */}
-                <Route
-                    path="/user-profile"
-                    element={
-                        <PrivateRoute allowedRoles={["user", "author", "admin"]}>
-                            <UserProfile />
-                        </PrivateRoute>
-                    }
-                />
+                <Route path="/account" element={<AccountLayout />}>
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="profile" element={<UserProfile />} />
+                    <Route path="author" element={<AuthorSection />} />
+                    <Route path="upload-job" element={<UploadJob />} />
+                </Route>
 
                 <Route
                     path="/post-job"
@@ -73,7 +66,6 @@ function App() {
                     }
                 />
 
-                {/* Routes cho Company */}
                 <Route
                     path="/company-profile"
                     element={
@@ -82,37 +74,12 @@ function App() {
                         </PrivateRoute>
                     }
                 />
-                <Route
-                    path="/upload-job"
-                    element={
-                        <PrivateRoute allowedRoles={["author", "admin"]}>
-                            <UploadJob />
-                        </PrivateRoute>
-                    }
-                />
 
-                <Route
-                    path="/admin/dashboard"
-                    element={
-                        <PrivateRoute allowedRoles={["admin"]}>
-                            <Admin />
-                        </PrivateRoute>
-                    }
-                />
-
-                <Route
-                    path="/author/dashboard"
-                    element={
-                        <PrivateRoute allowedRoles={["author"]}>
-                            <Author />
-                        </PrivateRoute>
-                    }
-                />
 
                 <Route path="*" element={<Error_404 />} />
             </Routes>
 
-            <Footer/> 
+            <Footer />
             <ToastContainer />
         </main>
     );

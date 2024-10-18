@@ -10,6 +10,7 @@ import Loading from "./Loading";
 import CompanyCard from "./CompanyCard";
 import JobTypes from "./JobTypes";
 import PrivateRoute from "./PrivateRoute";
+import AccountNav from "./Account-nav";
 
 
 export {
@@ -24,5 +25,6 @@ export {
   Loading,
   CompanyCard,
   JobTypes,
-  PrivateRoute
+  PrivateRoute,
+  AccountNav
 };

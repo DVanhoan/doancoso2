@@ -1,7 +1,7 @@
-const Author = () => {
+const AuthorSection = () => {
     return (
         <div>Author</div>
     )
 }
 
-export default Author
+export default AuthorSection

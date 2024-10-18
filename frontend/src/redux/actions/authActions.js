@@ -41,33 +41,39 @@ export const getAll = async () => {
   return res;
 };
 
-export const getMyUser = () => {
-  return async (dispatch) => {
+export const getMyUser = () => async (dispatch) => {
+  const token = localStorage.getItem('token');
   try {
-    
-
-    const res = await axios.get(API_URL + "my-account", {
-      headers: authHeader(),
-    });
-
-    store.dispatch({
-      type: SET_MY_USER,
-      payload: res.data,
-    });
-    return res;
+      const response = await axios.get(API_URL +'/api/v1/my-account', {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      });
+      dispatch({ type: 'SET_MY_USER', payload: response.data });
   } catch (error) {
-    console.error(error);
+      dispatch({ type: 'AUTH_ERROR' });
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
   }
-  }
-
 };
 
 
 
-export const logout = () => (dispatch) => {
-  localStorage.removeItem("token");
-  dispatch({ type: "LOGOUT" });
-  window.location.href = "/user-auth";
+export const logout = () => async (dispatch) => {
+  try {
+    await axios.post(`${API_URL}logout`, {}, { headers: authHeader() });
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("user");
+
+    dispatch({ type: "LOGOUT" });
+
+    return true;
+  } catch (error) {
+    console.error("Logout failed:", error);
+    return false;
+  }
 };
 
 const authHeader = () => {
